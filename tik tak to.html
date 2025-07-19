@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tik Tak Toe 2 Pemain</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e0f0ff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #004080;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      width: 90vw;
+      max-width: 300px;
+    }
+
+    .cell {
+      background-color: #ffffff;
+      border: 2px solid #004080;
+      width: 100%;
+      padding-top: 100%; /* Membuat persegi */
+      position: relative;
+      cursor: pointer;
+      font-size: 2.5rem;
+      text-align: center;
+      line-height: 1;
+      font-weight: bold;
+      color: #004080;
+    }
+
+    .cell span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #status {
+      margin: 20px;
+      font-size: 1.2rem;
+      color: #004080;
+    }
+
+    #reset {
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #reset:hover {
+      background-color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tik Tak Toe</h1>
+  <div id="status">Giliran: X</div>
+  <div id="game"></div>
+  <button id="reset">Mulai Ulang</button>
+
+  <script>
+    const gameBoard = document.getElementById('game');
+    const statusText = document.getElementById('status');
+    const resetButton = document.getElementById('reset');
+
+    let currentPlayer = 'X';
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let isGameOver = false;
+
+    function createBoard() {
+      gameBoard.innerHTML = "";
+      board.forEach((cell, index) => {
+        const cellDiv = document.createElement('div');
+        cellDiv.classList.add('cell');
+        cellDiv.dataset.index = index;
+        cellDiv.innerHTML = `<span>${cell}</span>`;
+        cellDiv.addEventListener('click', handleMove);
+        gameBoard.appendChild(cellDiv);
+      });
+    }
+
+    function handleMove(e) {
+      const index = e.target.closest('.cell').dataset.index;
+
+      if (board[index] !== "" || isGameOver) return;
+
+      board[index] = currentPlayer;
+      createBoard();
+      if (checkWinner()) {
+        statusText.textContent = `Pemain ${currentPlayer} Menang!`;
+        isGameOver = true;
+        return;
+      } else if (board.every(cell => cell !== "")) {
+        statusText.textContent = "Seri!";
+        isGameOver = true;
+        return;
+      }
+
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      statusText.textContent = `Giliran: ${currentPlayer}`;
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+
+      return winPatterns.some(pattern => {
+        const [a,b,c] = pattern;
+        return board[a] && board[a] === board[b] && board[a] === board[c];
+      });
+    }
+
+    resetButton.addEventListener('click', () => {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = 'X';
+      isGameOver = false;
+      statusText.textContent = `Giliran: ${currentPlayer}`;
+      createBoard();
+    });
+
+    createBoard();
+  </script>
+</body>
+</html>
